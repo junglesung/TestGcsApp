@@ -1,7 +1,10 @@
 package com.vernonsung.testgcsapp;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,11 +34,9 @@ public class MainActivity extends AppCompatActivity {
         buttonBrowseUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new DownloadTask().execute("http://testgcsserver.appspot.com.storage.googleapis.com/d45e96c0-6196-4eaa-93bc-409c5453b111.jpg");
+                uploadAndDownloadGcs(v);
             }
         });
-        ImageView imageView = (ImageView)findViewById(R.id.imageView);
-        imageView.setImageResource(R.drawable.lighthouse);
     }
 
     @Override
@@ -58,6 +59,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void uploadAndDownloadGcs(View v) {
+        // Browse a picture
+
+        // Check network connection ability and then access Google Cloud Storage
+        ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            new DownloadTask().execute("http://testgcsserver.appspot.com.storage.googleapis.com/d45e96c0-6196-4eaa-93bc-409c5453b111.jpg");
+        } else {
+            Toast.makeText(v.getContext(), "No network connection available.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
